@@ -22,8 +22,6 @@ export const unfollowUser = async (req,res)=>{
         res.json({ success: false });
     }
 }
-
-
 export const isFollowing = async (follower_id, following_id) => {
     try {
         const result = await pool.query("SELECT * FROM follows WHERE follower_id = $1 AND following_id = $2", [follower_id, following_id]);
@@ -51,5 +49,37 @@ export const countFollowing = async (follower_id) => {
     } catch (error) {
         console.log("Error", error);
         return 0;
+    }
+}
+
+export const getFollowerList = async (following_id) => {
+    try {
+        const result = await pool.query("SELECT follower_id FROM follows WHERE following_id = $1", [following_id]);
+        return result.rows.map(row => row.follower_id);
+    } catch (error) {
+        console.log("Error", error);
+        return [];
+    }
+}
+
+export const getFollowingList = async (follower_id) => {
+    try {
+        const result = await pool.query("SELECT following_id FROM follows WHERE follower_id = $1", [follower_id]);
+        return result.rows.map(row => row.following_id);
+    } catch (error) {
+        console.log("Error", error);
+        return [];
+    }
+}
+
+export const removeFollower = async (req,res)=>{
+    try {
+        const followerId = req.user.id;
+        const followingId = req.params.userId;
+        await pool.query("DELETE FROM follows WHERE follower_id = $1 AND following_id = $2", [followingId, followerId]);
+        res.json({ success: true });
+    } catch (error) {
+        console.log("Error", error);
+        res.json({ success: false });
     }
 }

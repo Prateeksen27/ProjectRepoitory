@@ -10,7 +10,7 @@ import { sendOtp } from "../controllers/otp.js";
 import { checkRepo, deleteRepo, findRepoById, uploadRepo } from "../controllers/repo.js";
 import { techLogos } from "../models/techlogos.js";
 import { isAuthenticated } from "../config/passport.js";
-import { followUser, unfollowUser } from "../controllers/followController.js";
+import { followUser, getFollowerList, getFollowingList, removeFollower, unfollowUser } from "../controllers/followController.js";
 import User from "../models/user.js";
 const router = express.Router();
 // ✅ Storage Configuration for profile pictures
@@ -128,6 +128,37 @@ router.post("/upload", isAuthenticated, uploadProject.fields([
 //follow routes
 router.post("/follow/:userId", isAuthenticated, followUser);
 router.post("/unfollow/:userId",isAuthenticated,unfollowUser)
+router.post("/removefollower/:userId",isAuthenticated,removeFollower)
+router.get("/getFollowers/:userId", isAuthenticated, async (req,res)=>{
+    try {
+        const id = req.params.userId;
+        const followers = await getFollowerList(id);
+        res.json({followers:followers});
+    } catch (error) {
+        console.log("Error", error);
+        res.json({ success: false });
+    }
+});
+router.get("/getFollowing/:userId", isAuthenticated, async (req,res)=>{
+    try {
+        const id = req.params.userId;
+        const following = await getFollowingList(id);
+        // console.log("Following",following);
+        
+        res.json({following:following});
+    } catch (error) {
+        console.log("Error", error);
+        res.json({ success: false });
+    }
+});
+router.post("/getUsersByIds", async (req, res) => {
+    const { userIds } = req.body;
+    if (!userIds || !userIds.length) return res.json({ users: [] });
+
+    const users = await pool.query(`SELECT id, full_name, small_about, profile_pic FROM users WHERE id = ANY($1)`, [userIds]);
+    res.json({ users: users.rows });
+});
+
 // ✅ Auth Routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);

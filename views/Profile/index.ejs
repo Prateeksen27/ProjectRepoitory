@@ -64,15 +64,26 @@
                     <%= user.location %>
                 </p>
                 <div class="flex items-center space-x-4 mt-2">
-                    <p><%= data.countRepo %> <span class="text-gray-500 font-semibold">Repos</span> </p>
-                    <p><%= data.countFollow %> <span class="text-gray-500 font-semibold">Followers</span> </p>
-                    <p><%= data.countFollowings %> <span class="text-gray-500 font-semibold">Following</span> </p>
+                    <p>
+                        <%= data.countRepo %> <span class="text-gray-500 font-semibold">Repos</span>
+                    </p>
+                    <p>
+                        <span id="showFollowersBtn" class="cursor-pointer">
+                            <%= data.countFollow %>
+                        </span> <span class="text-gray-500 font-semibold">Followers</span>
+                    </p>
+                    <p>
+                        <span id="showFollowingBtn" class="cursor-pointer">
+                            <%= data.countFollowings %>
+                        </span> <span class="text-gray-500 font-semibold">Following</span>
+                    </p>
                 </div>
             </div>
 
             <div class="flex-1 flex flex-col items-center lg:items-end justify-end px-8 mt-2">
 
                 <div class="flex items-center space-x-4 mt-2">
+
                     <% if (!owner) { %>
                         <% if (!isFollow) { %>
                             <button id="connectBtn"
@@ -287,18 +298,74 @@
                             height="828"></canvas>
                     </div>
                 </div>
+
+
             </div>
         </div>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
         <script>
+            if ("<%= owner %>" == "true") {
+                document.addEventListener("DOMContentLoaded", function () {
+                    const bannerImage = document.getElementById("bannerImage");
+                    const bannerInput = document.getElementById("bannerInput");
+                    const editBannerBtn = document.getElementById("editBannerBtn");
+
+                    const profileImage = document.getElementById("profileImage");
+                    const profileInput = document.getElementById("profileInput");
+
+                    // Handle Banner Image Change
+                    editBannerBtn.addEventListener("click", () => {
+                        bannerInput.click();
+                    });
+
+                    bannerInput.addEventListener("change", function () {
+                        uploadImage(bannerInput.files[0], "/update-banner", bannerImage);
+                    });
+
+                    // Handle Profile Picture Change
+                    profileImage.addEventListener("click", () => {
+                        profileInput.click();
+                    });
+
+                    profileInput.addEventListener("change", function () {
+                        uploadImage(profileInput.files[0], "/update-profile-pic", profileImage);
+                    });
+
+                    // Function to Upload Image
+                    function uploadImage(file, endpoint, imgElement) {
+                        if (!file) return;
+
+                        const formData = new FormData();
+                        formData.append("image", file);
+
+                        fetch(endpoint, {
+                            method: "POST",
+                            body: formData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    imgElement.src = data.imageUrl; // Update UI
+                                    Swal.fire("Updated!", "Your image has been updated successfully.", "success");
+                                } else {
+                                    Swal.fire("Error!", "Failed to update image. Try again.", "error");
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            });
+                    }
+                });
+            }
+
             if (document.getElementById("editProfileBtn")) {
                 document.getElementById("editProfileBtn").addEventListener("click", function () {
-                    const userFullName = document.getElementById("userFullName").value;
-                    const userBirthday = document.getElementById("userBirthday").value;
-                    const userMobile = document.getElementById("userMobile").value;
-                    const userLocation = document.getElementById("userLocation").value;
-                    const userLanguages = document.getElementById("userLanguages").value;
-                    const userBio = document.getElementById("userBio").value;
+                    // const userFullName = document.getElementById("userFullName").value;
+                    // const userBirthday = document.getElementById("userBirthday").value;
+                    // const userMobile = document.getElementById("userMobile").value;
+                    // const userLocation = document.getElementById("userLocation").value;
+                    // const userLanguages = document.getElementById("userLanguages").value;
+                    // const userBio = document.getElementById("userBio").value;
 
                     Swal.fire({
                         title: "Edit Profile",
@@ -307,27 +374,27 @@
                         html: `
                         <div class="text-left space-y-4 px-2 py-2">
                             <label class="block text-gray-700 font-medium">Full Name:</label>
-                            <input id="swal-fullName" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="${userFullName}">
+                            <input id="swal-fullName" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="<%= user.full_name %>">
                             <p id="error-fullName" class="text-red-500 text-sm hidden">Full Name cannot be empty.</p>
         
                             <label class="block text-gray-700 font-medium">Birthday:</label>
-                            <input id="swal-birthday" type="date" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="${userBirthday}">
+                            <input id="swal-birthday" type="date" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="<%= user.birthday %>">
                             <p id="error-birthday" class="text-red-500 text-sm hidden">Birthday cannot be in the future.</p>
         
                             <label class="block text-gray-700 font-medium">Mobile:</label>
-                            <input id="swal-mobile" type="tel" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="${userMobile}">
+                            <input id="swal-mobile" type="tel" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="<%= user.mobile %>">
                             <p id="error-mobile" class="text-red-500 text-sm hidden">Enter a valid 10-digit mobile number.</p>
         
                             <label class="block text-gray-700 font-medium">Location:</label>
-                            <input id="swal-location" type="text" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="${userLocation}">
+                            <input id="swal-location" type="text" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="<%= user.location %>">
                             <p id="error-location" class="text-red-500 text-sm hidden">Location cannot be empty.</p>
         
                             <label class="block text-gray-700 font-medium">Languages:</label>
-                            <input id="swal-languages" type="text" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="${userLanguages}">
+                            <input id="swal-languages" type="text" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400" value="<%= user.languages %>">
                             <p id="error-languages" class="text-red-500 text-sm hidden">Languages cannot be empty.</p>
         
                             <label class="block text-gray-700 font-medium">About:</label>
-                            <textarea id="swal-about" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400 resize-none" rows="3">${userBio}</textarea>
+                            <textarea id="swal-about" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-400 resize-none" rows="3"><%= user.bio %></textarea>
                             <p id="error-about" class="text-red-500 text-sm hidden">About section cannot be empty.</p>
                         </div>
                     `,
@@ -463,6 +530,171 @@
 
 
             }
+            //show Follower List and Following List
+            document.getElementById("showFollowersBtn").addEventListener("click", async () => {
+                try {
+                    // Fetch list of follower IDs
+                    const res = await fetch("/getFollowers/<%= user.id %>"); // Endpoint to get follower IDs
+                    const { followers } = await res.json(); // followers is an array of user IDs
+
+                    if (!followers.length) {
+                        Swal.fire("No Followers", "info");
+                        return;
+                    }
+                   
+
+                    // Fetch user details based on IDs
+                    const usersRes = await fetch("/getUsersByIds", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userIds: followers })
+                    });
+
+                    const { users } = await usersRes.json(); // Array of user details
+
+                    // Generate follower list HTML
+                    const followerListHTML = users.map(user => `
+            <div class="flex items-center space-x-3 p-2 border-b">
+             <a href="/profile/${user.id}">   <img src="/profiles/${user.profile_pic}" alt="${user.full_name}" class="w-10 h-10 rounded-full border"> </a>
+                <div class="flex-1">
+                    <p class="text-lg font-semibold"> <a href="/profile/${user.id}"> ${user.full_name}</a></p>
+                    <p class="text-gray-500 text-sm">${user.small_about}</p>
+                </div>
+                 <% if (owner) { %>
+                 <button class="unfollowBtn bg-red-500 text-white px-3 py-1 rounded text-sm" data-id="${user.id}">
+                    Remove
+                </button>
+                <% } else { %>
+                <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                    <a href="/profile/${user.id}">View Profile</a>
+                </button>
+                <% } %>
+                
+            </div>
+        `).join("");
+
+                    // Show SweetAlert modal
+                    Swal.fire({
+                        title: "Followers",
+                        html: `<div class="max-h-96 overflow-y-auto">${followerListHTML}</div>`,
+                        showCloseButton: true,
+                        showConfirmButton: false
+                    });
+
+                    // Handle unfollow button clicks
+                    document.querySelectorAll(".unfollowBtn").forEach(button => {
+                        button.addEventListener("click", async (event) => {
+                            const userId = event.target.getAttribute("data-id");
+
+                            // Confirm before unfollowing
+                            const confirmUnfollow = await Swal.fire({
+                                title: "Are you sure?",
+                                text: "Do you want to Remove this user?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, Remove!",
+                                cancelButtonText: "Cancel"
+                            });
+
+                            if (confirmUnfollow.isConfirmed) {
+                                const unfollowRes = await fetch(`/removefollower/${userId}`, { method: "POST" });
+                                const unfollowData = await unfollowRes.json();
+
+                                if (unfollowData.success) {
+                                    Swal.fire("Removed!", "You have Removed the user.", "success").then(() => location.reload());
+                                } else {
+                                    Swal.fire("Error!", "Failed to unfollow. Try again.", "error");
+                                }
+                            }
+                        });
+                    });
+
+                } catch (error) {
+                    Swal.fire("Error!", "Something went wrong.", "error");
+                }
+            });
+            //follwoing List
+            document.getElementById("showFollowingBtn").addEventListener("click", async () => {
+                try {
+                    // Fetch list of follower IDs
+                    const res = await fetch("/getFollowing/<%= user.id %>"); // Endpoint to get follower IDs
+                    const { following } = await res.json(); // followers is an array of user IDs
+
+                    if (!following.length) {
+                        Swal.fire("No Following", "info");
+                        return;
+                    }
+                    // Fetch user details based on IDs
+                    const usersRes = await fetch("/getUsersByIds", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userIds: following })
+                    });
+
+                    const { users } = await usersRes.json(); // Array of user details
+
+                    // Generate follower list HTML
+                    const followerListHTML = users.map(user => `
+            <div class="flex items-center space-x-3 p-2 border-b">
+              <a href="/profile/${user.id}">  <img src="/profiles/${user.profile_pic}" alt="${user.full_name}" class="w-10 h-10 rounded-full border"> </a>
+                <div class="flex-1">
+                    <p class="text-lg font-semibold"> <a href="/profile/${user.id}"> ${user.full_name} </a></p>
+                    <p class="text-gray-500 text-sm">${user.small_about}</p>
+                </div>
+                 <% if (owner) { %>
+                 <button class="unfollowBtn bg-red-500 text-white px-3 py-1 rounded text-sm" data-id="${user.id}">
+                    Unfollow
+                </button>
+                <% } else { %>
+                <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                    <a href="/profile/${user.id}">View Profile</a>
+                </button>
+                <% } %>
+                
+            </div>
+        `).join("");
+
+                    // Show SweetAlert modal
+                    Swal.fire({
+                        title: "Following",
+                        html: `<div class="max-h-96 overflow-y-auto">${followerListHTML}</div>`,
+                        showCloseButton: true,
+                        showConfirmButton: false
+                    });
+
+                    // Handle unfollow button clicks
+                    document.querySelectorAll(".unfollowBtn").forEach(button => {
+                        button.addEventListener("click", async (event) => {
+                            const userId = event.target.getAttribute("data-id");
+
+                            // Confirm before unfollowing
+                            const confirmUnfollow = await Swal.fire({
+                                title: "Are you sure?",
+                                text: "Do You want to unfollow this user?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, Unfollow!",
+                                cancelButtonText: "Cancel"
+                            });
+
+                            if (confirmUnfollow.isConfirmed) {
+                                const unfollowRes = await fetch(`/unfollow/${userId}`, { method: "POST" });
+                                const unfollowData = await unfollowRes.json();
+
+                                if (unfollowData.success) {
+                                    Swal.fire("Unfollowed!", "You have Unfollowed the user.", "success").then(() => location.reload());
+                                } else {
+                                    Swal.fire("Error!", "Failed to unfollow. Try again.", "error");
+                                }
+                            }
+                        });
+                    });
+
+                } catch (error) {
+                    Swal.fire("Error!", "Something went wrong.", "error");
+                }
+            });
+
 
         </script>
 

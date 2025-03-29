@@ -29,7 +29,8 @@
                         <% repo.tech_stack.split(",").forEach(tech => { %>
                           <% const techKey = tech.trim().toLowerCase(); %>
                           <% const logoUrl = techLogos[techKey] || techLogos["default"]; %>
-                          <img src="<%= logoUrl %>" alt="<%= tech %>" class="w-6 h-6 m-1">
+                          <img src="<%= logoUrl %>" alt="<%= tech %>" class="w-6 bg-gray-200 h-6 m-1">
+
                         <% }); %>
                       <% } else { %>
                         <p class="text-gray-500 text-xs">No tech stack provided</p>
