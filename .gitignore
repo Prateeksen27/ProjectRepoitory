@@ -1,2 +1,20 @@
+# Ignore user-uploaded content
+public/profiles/
+public/uploads/
+
+# Ignore node_modules
 node_modules/
+
+# Ignore environment variables
 .env
+
+# Ignore logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore OS/system files
+.DS_Store
+Thumbs.db
