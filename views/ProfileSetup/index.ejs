@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center min-h-screen p-4">
+    
+    <!-- Main Container -->
+    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-lg">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Let's Set Up Your Profile</h1>
+            <p class="text-gray-500 mt-2">Complete your profile to get started</p>
+        </div>
+
+        <!-- Profile Setup Form -->
+        <form action="/profile-setup" method="POST" enctype="multipart/form-data" class="space-y-6">
+            
+            <!-- Profile Picture Upload -->
+            <div class="text-center relative">
+                <!-- Profile Picture Container -->
+                <div class="relative w-32 h-32 mx-auto">
+                    <label for="profilePic" class="cursor-pointer">
+                        <!-- Profile Image -->
+                        <img id="profilePreview" 
+                            src="/images/profile.jpg" 
+                            class="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover transition duration-300 hover:opacity-80" 
+                            alt="Profile Picture">
+                    </label>
+                </div>
+            
+                <!-- Upload Message -->
+                <p class="text-sm text-gray-500 mt-3">Click to upload</p>
+                
+                <!-- Hidden File Input -->
+                <input type="file" name="profilePic" id="profilePic" accept="image/*" class="hidden">
+            </div>
+            
+            <!-- Full Name -->
+            <div>
+                <label class="block text-gray-700 font-medium">Full Name</label>
+                <input type="text" name="fullName" placeholder="Enter your full name" 
+                    class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 outline-none bg-gray-50" required>
+            </div>
+
+            <!-- Bio -->
+            <div>
+                <label class="block text-gray-700 font-medium">Bio</label>
+                <input name="bio" placeholder="Give your bio" 
+                    class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 outline-none bg-gray-50" required>
+            </div>
+
+            <!-- Save Profile Button -->
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+                Save Profile
+            </button>
+
+        </form>
+    </div>
+
+    <!-- Image Crop Modal -->
+    <div id="imageCropModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white p-5 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 class="text-xl font-bold text-gray-800 text-center mb-4">Adjust Your Profile Picture</h2>
+            <div class="w-full flex justify-center">
+                <img id="cropperImage" class="max-w-full max-h-96">
+            </div>
+            <div class="flex justify-between mt-4">
+                <button id="cancelCrop" class="px-4 py-2 bg-gray-500 text-white rounded-lg">Cancel</button>
+                <button id="applyCrop" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cropper;
+        const profilePicInput = document.getElementById("profilePic");
+        const profilePreview = document.getElementById("profilePreview");
+        const imageCropModal = document.getElementById("imageCropModal");
+        const cropperImage = document.getElementById("cropperImage");
+        const applyCropButton = document.getElementById("applyCrop");
+        const cancelCropButton = document.getElementById("cancelCrop");
+
+        // Open cropper when user selects an image
+        profilePicInput.addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    cropperImage.src = e.target.result;
+                    imageCropModal.classList.remove("hidden");
+                    if (cropper) cropper.destroy();  // Destroy previous cropper instance
+                    cropper = new Cropper(cropperImage, {
+                        aspectRatio: 1, // Square crop
+                        viewMode: 2,
+                        autoCropArea: 1
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Apply cropped image
+        applyCropButton.addEventListener("click", function() {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas();
+                profilePreview.src = canvas.toDataURL(); // Update profile preview
+                imageCropModal.classList.add("hidden");
+            }
+        });
+
+        // Cancel cropping
+        cancelCropButton.addEventListener("click", function() {
+            imageCropModal.classList.add("hidden");
+        });
+    </script>
+
+</body>
+</html>

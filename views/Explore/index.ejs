@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+<body class="bg-gray-50 dark:bg-gray-900">
+  <div class="flex h-screen">
+    <%- include('../partials/sidebar') %>
+    <div class="flex flex-col flex-1">
+      <%- include('../partials/navbar') %>
+      <main class="h-full pb-16 overflow-y-auto">
+        <h1 class="m-6 p-4 text-2xl font-bold text-gray-800 dark:text-gray-100" style="margin-left: 50px;">
+          Explore Repositories 🚀
+        </h1>
+        <div class="px-6">
+          <div id="repoContainer" class="flex flex-wrap gap-6" style="margin-left: 50px;">
+            <% if (repos.length === 0) { %>
+              <p class="text-gray-500 dark:text-gray-400">You have no repositories yet.</p>
+            <% } else { %>
+              <% repos.forEach(repo => { %>
+                <div class="repo bg-white dark:bg-gray-800 relative flex flex-col justify-center rounded-lg shadow-md p-4 transition-transform transform hover:scale-105" style="width: 370px;">
+                  <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    <%= repo.title %>
+                  </h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">📅 Created: <%= new Date(repo.created_at).toLocaleDateString() %></p>
+                  <div class="flex flex-col flex-grow mt-4 px-2">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      <%= repo.domain || "No description provided" %>
+                    </p>
+                    <div class="flex flex-wrap mt-2" style="gap: 10px;">
+                      <% if (repo.tech_stack) { %>
+                        <% repo.tech_stack.split(",").forEach(tech => { %>
+                          <% const techKey = tech.trim().toLowerCase(); %>
+                          <% const logoUrl = techLogos[techKey] || techLogos["default"]; %>
+                          <img src="<%= logoUrl %>" alt="<%= tech %>" class="w-6 h-6 m-1">
+                        <% }); %>
+                      <% } else { %>
+                        <p class="text-gray-500 text-xs">No tech stack provided</p>
+                      <% } %>
+                    </div>
+                    <div class="flex gap-4 mt-4" style="gap: 15px;">
+                      <a href="/repo/<%= repo.id %>" class="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition">
+                        Show Repo
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.getElementById("search").addEventListener("input", function() {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll("#repoContainer .repo").forEach(repo => {
+        const title = repo.querySelector("h3").textContent.toLowerCase();
+        repo.style.display = title.includes(query) ? "block" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

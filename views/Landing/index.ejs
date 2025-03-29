@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ProjectRepo</title>
+    
+    <link rel="stylesheet" href="styles/output.css" />
+
+    <!-- AOS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    
+    <!-- swiper css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <!-- Internal CSS -->
+    <style>
+      .custom-bg {
+        background-color: #2563eb; /* Tailwind's blue-600 */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- header section  -->
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+      <nav class="max-w-[1440px] container mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="text-2xl font-bold flex items-center gap-2">
+            <span style="color: #2563eb;">ProjectRepo</span>
+        </div>
+        <div class="hidden md:flex space-x-8">
+          <a href="#home" class="text-gray-600 hover:text-gray-900">Home</a>
+          <a href="#features" class="text-gray-600 hover:text-gray-900">Features</a>
+          <a href="#subscribe" class="text-gray-600 hover:text-gray-900">Help</a>
+        </div>
+        <div class="space-x-4">
+          <button class="custom-bg text-white px-4 py-2 rounded-full hover:bg-blue-700">
+            <a href="/login" class="text-white">Login/Sign Up</a>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="max-w-[1440px] container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12" id="home">
+      <div class="md:w-1/2 mb-8 md:mb-0 space-y-8" data-aos="fade-right">
+        <h1 class="lg:text-4xl md:text-5xl text-4xl font-bold leading-tight text-gray-900">
+          Simplify Your Project Management with ProjectRepo.
+        </h1>
+        <p class="text-gray-600 text-lg leading-relaxed max-w-xl">
+          Manage and collaborate on projects effortlessly with ProjectRepo. Discover powerful features designed to streamline your workflow.
+        </p>
+        <div class="pt-4">
+          <button class="custom-bg text-white px-12 py-4 rounded-lg hover:bg-blue-700 shadow-lg text-lg font-medium">
+            <a href="/login">Get Started</a>
+          </button>
+        </div>
+      </div>
+      <div class="md:w-1/2" data-aos="fade-left">
+        <img src="./images/banner.png" alt="ProjectRepo illustration" class="w-full">
+      </div>
+    </section>
+      <!-- Features Section -->
+      <section class="max-w-[1440px] container mx-auto px-4 py-24" id="features">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+            <!-- Left Content (Illustration) -->
+            <div class="md:w-1/2" data-aos="fade-right">
+                <img src="./images/features.png"alt="ProjectRepo Features illustration" class="w-full">
+            </div>
+    
+            <!-- Right Content -->
+            <div class="md:w-1/2 space-y-8" data-aos="fade-left">
+                <h2 class="text-4xl font-bold text-gray-900 leading-tight">
+                    Discover the Features of <br>
+                    ProjectRepo
+                </h2>
+                <p class="text-gray-600 leading-relaxed">
+                    Explore a seamless way to manage, showcase, and collaborate on projects <br class="hidden sm:block"> with powerful features tailored for developers and teams.
+                </p>
+    
+                <!-- Features List -->
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <div class="p-1 rounded-full bg-blue-100">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-600">Organized project repository</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="p-1 rounded-full bg-blue-100">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-600">Easy project categorization</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="p-1 rounded-full bg-blue-100">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-600">Collaboration & version control</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="p-1 rounded-full bg-blue-100">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="text-gray-600">Seamless project showcasing</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+        <!-- Global Network Section -->
+        <section class="max-w-[1440px] container mx-auto px-4 py-24" id="network">
+            <!-- Section Header -->
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Huge Global Network<br>
+                    of ProjectRepo
+                </h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    <span class="font-medium">ProjectRepo</span> is your go-to platform, making it easier to manage and showcase your projects when you move between locations.
+    
+                </p>
+            </div>
+    
+            <!-- World Map -->
+            <div class="mb-16" data-aos="zoom-in">
+                <img src="./images/map.png" alt="Global Network Map" class="w-full">
+            </div>
+        </section>
+
+
+    <!-- Subscribe Section -->
+    <section class="max-w-[1440px] container mx-auto px-4 py-16" id="subscribe">
+      <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl" data-aos="fade-up">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+          <div>
+            <h2 class="lg:text-4xl md:text-3xl text-2xl font-bold text-gray-900 mb-5">
+              Subscribe Now for Special Features!
+            </h2>
+            <p class="text-gray-600">Let's subscribe with us and find the fun.</p>
+          </div>
+          <div>
+            <button class="custom-bg text-white px-8 py-2 rounded-xl hover:bg-blue-700 shadow-lg">
+              Subscribe Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100">
+      <div class="max-w-[1440px] container mx-auto px-4 py-24 flex justify-between items-center">
+        <div>
+          <span class="text-xl font-bold">ProjectRepo</span>
+          <p class="text-gray-600">ProjectRepo is a platform designed to manage and showcase your projects with ease.</p>
+          <p class="text-gray-500 mt-8">©2025 ProjectRepo</p>
+        </div>
+        <div class="flex gap-4">
+          <a href="#" class="p-2 rounded-full custom-bg shadow-md hover:shadow-lg">
+            <img src="./images/facebook.png" alt="Facebook" class="w-4 h-4">
+          </a>
+          <a href="#" class="p-2 rounded-full custom-bg shadow-md hover:shadow-lg">
+            <img src="./images/twitter.png" alt="Twitter" class="w-4 h-4">
+          </a>
+          <a href="#" class="p-2 rounded-full custom-bg shadow-md hover:shadow-lg">
+            <img src="./images/instagram.png" alt="Instagram" class="w-4 h-4">
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init({ duration: 1000, once: true });
+    </script>
+    
+    <!-- JS Script -->
+    <script src="./js/app.js"></script>
+  </body>
+</html>

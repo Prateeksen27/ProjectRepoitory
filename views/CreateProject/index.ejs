@@ -1,0 +1,295 @@
+<%- include('../partials/header') %>
+
+    <body>
+        <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+            <%- include('../partials/sidebar') %>
+                <div class="flex flex-col flex-1">
+                    <%- include('../partials/navbar') %>
+                        <main class="h-full flex justify-center pb-16 overflow-y-auto p-6">
+                            <form method="post" action="/upload" enctype="multipart/form-data"
+                                class=" bg-white dark:bg-gray-800 rounded-lg  p-8 max-w-lg h-fit"
+                                style="width: 600px; padding: 30px;" id="projectForm">
+                                <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Upload Your Project
+                                </h2>
+
+                                <!-- Project Title -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Project Title</label>
+                                    <input type="text" id="title" name="title" required
+                                        class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-purple-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                                        placeholder="Enter project title">
+                                    <p id="titleCheckMessage" class="text-sm mt-2"></p>
+                                </div>
+                                <!-- Project Description -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Project
+                                        Description</label>
+                                    <textarea id="description" name="description" required class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:
+                                        ring-purple-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
+                                        " placeholder="Enter project description"></textarea>
+                                </div>
+
+
+
+
+                                <!-- ZIP File Upload -->
+                                <!-- ZIP File Upload -->
+                                <div class="mb-8 w-full">
+                                    <label
+                                        class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Upload
+                                        ZIP File</label>
+                                    <div class="flex items-center justify-center">
+                                        <label for="zipFile"
+                                            class="flex flex-col items-center justify-center w-full max-w-2xl h-72 border-4 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 transition-all duration-300 p-6">
+                                            <div class="flex flex-col items-center justify-center space-y-4">
+                                                <svg class="w-12 h-12 text-gray-500 dark:text-gray-400"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 20 16">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                                </svg>
+                                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300"><span
+                                                        class="font-semibold">Click to
+                                                        upload</span> or drag and drop</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Only ZIP files are
+                                                    supported</p>
+                                            </div>
+                                            <input type="file" id="zipFile" name="zipFile" accept=".zip" required
+                                                class="hidden">
+                                        </label>
+                                    </div>
+                                    <!-- File name display -->
+                                    <p id="zipFileName" class="text-sm mt-2 text-gray-700 dark:text-gray-300"></p>
+                                </div>
+
+
+                                <!-- Detected Tech Stack -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Tech
+                                        Stack</label>
+                                    <div id="techStackDisplay" class="flex flex-wrap gap-4"></div>
+                                    <input type="hidden" id="tech_stack" name="tech_stack">
+                                </div>
+                                <!-- Domain use select  -->
+                                <div class="mb-4">
+                                    <label for="domain_use"
+                                        class="block text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                                        Select Domain
+                                    </label>
+                                    <select id="domain_use" name="domain"
+                                        class="block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 transition duration-200">
+                                        <option value="">Select</option>
+                                        <option value="Web Development">Web Development</option>
+                                        <option value="Mobile App Development">Mobile App Development</option>
+                                        <option value="AI & Machine Learning">AI & Machine Learning</option>
+                                        <option value="Blockchain">Blockchain</option>
+                                        <option value="Cybersecurity">Cybersecurity</option>
+                                        <option value="Game Development">Game Development</option>
+                                        <option value="Embedded Systems">Embedded Systems</option>
+                                        <option value="IoT (Internet of Things)">IoT (Internet of Things)</option>
+                                        <option value="Cloud Computing">Cloud Computing</option>
+                                        <option value="Data Science">Data Science</option>
+                                        <option value="Computer Vision">Computer Vision</option>
+                                        <option value="Natural Language Processing">Natural Language Processing</option>
+                                        <option value="AR/VR (Augmented & Virtual Reality)">AR/VR (Augmented & Virtual
+                                            Reality)</option>
+                                        <option value="DevOps & Automation">DevOps & Automation</option>
+                                        <option value="Big Data">Big Data</option>
+                                        <option value="Networking">Networking</option>
+                                        <option value="Software Testing & QA">Software Testing & QA</option>
+                                        <option value="Operating Systems">Operating Systems</option>
+                                    </select>
+                                </div>
+
+                                <!-- project image  -->
+                                <!-- Project Image Upload -->
+                                <!-- Project Image Upload -->
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Project Image</label>
+
+                                    <!-- Upload Box -->
+                                    <div id="imageUploadBox"
+                                        class="w-full h-48 border-2 border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-gray-700 cursor-pointer overflow-hidden transition-all duration-300">
+                                        <span id="uploadText" class="text-gray-500 dark:text-gray-400 p-4">Click to
+                                            upload
+                                            an image</span>
+                                        <img id="imagePreview" class="hidden object-cover" width="300px" height="150px">
+                                    </div>
+
+                                    <!-- Hidden Input -->
+                                    <input type="file" id="projectImage" name="projectImage" accept="image/*"
+                                        class="hidden">
+                                </div>
+
+                                <!-- GitHub Repository Link -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Live Project
+                                        URL(Optional)</label>
+                                    <input type="url" id="github" name="url"
+                                        class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-purple-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                                        placeholder="Enter LIVE project URL">
+                                </div>
+
+
+                                <!-- Submit Button -->
+
+                                <button type="submit"
+                                    class=" text-white font-semibold rounded-lg m-6 p-3 transition duration-300 new-repo-btn"
+                                    id="submitBtn">
+                                    Upload Project
+                                </button>
+
+                            </form>
+                        </main>
+                </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script>
+            document.getElementById("zipFile").addEventListener("change", async function (event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                document.getElementById("zipFileName").textContent = `📁 Selected file: ${file.name}`;
+                const techStack = new Set();
+                const techLogos = {
+                    "Node.js": "https://img.icons8.com/color/48/nodejs.png",
+                    "React.js": "https://img.icons8.com/color/48/react-native.png",
+                    "Python": "https://img.icons8.com/color/48/python.png",
+                    "Java": "https://img.icons8.com/color/48/java-coffee-cup-logo.png",
+                    "C++": "https://img.icons8.com/color/48/c-plus-plus-logo.png",
+                    "C": "https://img.icons8.com/color/48/c-programming.png",
+                    "Express.js": "https://img.icons8.com/ios/50/express-js.png",
+                    "MongoDB": "https://img.icons8.com/color/48/mongodb.png",
+                    "PostgreSQL": "https://img.icons8.com/color/48/postgreesql.png",
+                    "HTML": "https://img.icons8.com/color/48/html-5.png",
+                    "CSS": "https://img.icons8.com/color/48/css3.png",
+                    "JavaScript": "https://img.icons8.com/color/48/javascript.png",
+                    "Git": "https://img.icons8.com/color/48/git.png",
+                    "TypeScript": "https://img.icons8.com/color/48/typescript.png",
+                    "Django": "https://img.icons8.com/color/48/django.png",
+                    "Flask": "https://img.icons8.com/ios/50/flask.png",
+                    "SQL": "https://img.icons8.com/color/48/mysql-logo.png",
+                    "Firebase": "https://img.icons8.com/color/48/firebase.png",
+                    "Docker": "https://img.icons8.com/color/48/docker.png",
+                    "Kubernetes": "https://img.icons8.com/color/48/kubernetes.png",
+                    "GraphQL": "https://img.icons8.com/color/48/graphql.png",
+                    "Redux": "https://img.icons8.com/color/48/redux.png",
+                    "Next.js": "https://img.icons8.com/ios/50/nextjs.png",
+                    "Tailwind CSS": "https://img.icons8.com/color/48/tailwindcss.png"
+                }
+                    ;
+
+                const zip = new JSZip();
+                await zip.loadAsync(file);
+
+                zip.forEach((relativePath, file) => {
+                    if (relativePath.endsWith(".json")) techStack.add("Node.js");
+                    if (relativePath.endsWith(".html")) techStack.add("HTML");
+                    if (relativePath.endsWith(".css")) techStack.add("CSS");
+                    if (relativePath.endsWith(".js")) techStack.add("JavaScript");
+                    if (relativePath.endsWith(".py")) techStack.add("Python");
+                    if (relativePath.endsWith(".java")) techStack.add("Java");
+                    if (relativePath.endsWith(".cpp")) techStack.add("C++");
+                    if (relativePath.endsWith(".c")) techStack.add("C");
+                    if (relativePath.endsWith("server.js")) techStack.add("Express.js");
+                    if (relativePath.endsWith("server.py")) techStack.add("Python");
+                    if (relativePath.endsWith("server.java")) techStack.add("Java");
+                    if (relativePath.endsWith("server.cpp")) techStack.add("C++");
+                    if (relativePath.endsWith("server.c")) techStack.add("C");
+                    if (relativePath.endsWith("database.json")) techStack.add("MongoDB");
+                    if (relativePath.endsWith(".sql")) techStack.add("SQL");
+
+                });
+
+                document.getElementById("tech_stack").value = Array.from(techStack).join(", ");
+                const displayDiv = document.getElementById("techStackDisplay");
+                displayDiv.innerHTML = "";
+                techStack.forEach(tech => {
+                    const imgSrc = techLogos[tech] || "https://img.icons8.com/ios/50/code.png";
+                    const div = document.createElement("div");
+                    div.className = "flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-lg";
+                    div.innerHTML = `<img src="${imgSrc}" alt="${tech}" class="w-6 h-6"> <span class="dark:text-white" style="margin-left:10px;">${tech}</span>`;
+                    displayDiv.appendChild(div);
+                });
+            });
+            document.getElementById("imageUploadBox").addEventListener("click", function () {
+                document.getElementById("projectImage").click();
+            });
+
+            document.getElementById("projectImage").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                const imagePreview = document.getElementById("imagePreview");
+                const uploadText = document.getElementById("uploadText");
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove("hidden");
+                        uploadText.classList.add("hidden");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const titleInput = document.getElementById("title");
+                const checkMessage = document.getElementById("titleCheckMessage");
+                const submitButton = document.querySelector("button[type='submit']");
+
+                let timeout = null;
+
+                titleInput.addEventListener("input", function () {
+                    clearTimeout(timeout);
+                    const title = titleInput.value.trim();
+                    submitButton.disabled = true; // Disable submit initially
+
+                    if (title.length < 3) {
+                        checkMessage.textContent = "Title must be at least 3 characters";
+                        checkMessage.style.color = "orange";
+                        return;
+                    }
+
+                    timeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`/check-repo-name?title=${encodeURIComponent(title)}`);
+                            const data = await response.json();
+
+                            if (data.available) {
+                                checkMessage.textContent = "✅ Repository name is available";
+                                checkMessage.style.color = "green";
+                                submitButton.disabled = false; // Enable submit if available
+                            } else {
+                                checkMessage.textContent = "❌ Repository name already exists";
+                                checkMessage.style.color = "red";
+                                submitButton.disabled = true; // Keep submit disabled
+                            }
+                        } catch (error) {
+                            checkMessage.textContent = "⚠️ Error checking availability";
+                            checkMessage.style.color = "red";
+                            submitButton.disabled = true; // Keep disabled on error
+                        }
+                    }, 500); // Delay to avoid multiple requests
+                });
+            });
+            document.getElementById("submitBtn").addEventListener("click", function (event) {
+                event.preventDefault()
+                Swal.fire({
+                    title: "Upload this project?",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes!",
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        document.getElementById("projectForm").submit();
+                        Swal.fire("Uploaded!", "Your Repo is uploaded", "success")
+                    } else if (result.isDenied) {
+                        Swal.fire("Changes are not saved", "", "info");
+                    }
+                });
+            })
+        </script>
+    </body>
+
+    </html>

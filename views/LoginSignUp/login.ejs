@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles/login.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Blur effect when loading */
+        .blur-background {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Loader Container - Centered */
+        .loader-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 1000;
+        }
+
+        /* Loader Animation */
+        .loader {
+            width: 50px;
+            padding: 8px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #25b09b;
+            --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+            -webkit-mask: var(--_m);
+            mask: var(--_m);
+            -webkit-mask-composite: source-out;
+            mask-composite: subtract;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(1turn);
+            }
+        }
+    </style>
+    
+    <title>Sign in & Sign up</title>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+
+    <div class="container">
+        <div class="forms-container">
+            <div class="signin-signup">
+                
+                <!-- Sign In Form -->
+                <form action="/login" class="sign-in-form" method="post">
+                    <h2 class="title">Sign in</h2>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="email" id="login-email" placeholder="Email" name="email" required />
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Password" name="password" required />
+                        <i class="fas fa-eye toggle-password" data-target="loginPassword"></i>
+                    </div>
+                    <input type="button" value="Login" class="btn solid " id="login-btn" />
+                </form>
+
+                <!-- Sign Up Form -->
+                <form action="/register" class="sign-up-form" method="post">
+                    <h2 class="title">Sign up</h2>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signupEmail" placeholder="Email" name="email" required />
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Password" name="password" required />
+                        <i class="fas fa-eye toggle-password" data-target="signupPassword"></i>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required />
+                        <i class="fas fa-eye toggle-password" data-target="confirmPassword"></i>
+                    </div>
+                    <div class="button-container">
+                        <input type="button" class="btn sign-in-button" value="Sign up" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Left Panel -->
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>New here?</h3>
+                    <p>Join us today and manage your projects efficiently!</p>
+                    <button class="btn transparent" id="sign-up-btn">Sign up</button>
+                </div>
+                <img src="images/log.svg" class="image" alt="" />
+            </div>
+
+            <!-- Right Panel -->
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>One of us?</h3>
+                    <p>Sign in to access your projects instantly.</p>
+                    <button class="btn transparent" id="sign-in-btn">Sign in</button>
+                </div>
+                <img src="images/register.svg" class="image" alt="" />
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const signUpBtn = document.getElementById("sign-up-btn");
+            const signInBtn = document.getElementById("sign-in-btn");
+            const loginBtn = document.getElementById("login-btn");
+            const container = document.querySelector(".container");
+            const loaderContainer = document.querySelector(".loader-container");
+
+            loginBtn.addEventListener('click',async (event)=>{
+                event.preventDefault();
+                const email = document.getElementById("login-email").value.trim()
+                const res = await fetch("/isRegistered",{
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                })
+                const data = await res.json();  
+                
+                console.log(data);
+                
+                
+                if(!data.isRegistered){
+                    hideLoader()
+                    return Swal.fire("User Not found!", "Try Register first", "error");
+                    
+                }else{
+                    document.querySelector(".sign-in-form").submit();
+                }
+                
+                
+            })
+
+            function showLoader() {
+                container.classList.add("blur-background");
+                loaderContainer.style.display = "flex";
+            }
+
+            function hideLoader() {
+                container.classList.remove("blur-background");
+                loaderContainer.style.display = "none";
+            }
+
+            // Toggle between Sign In & Sign Up
+            signUpBtn.addEventListener("click", () => container.classList.add("sign-up-mode"));
+            signInBtn.addEventListener("click", () => container.classList.remove("sign-up-mode"));
+
+            // Password Show/Hide Toggle
+            document.querySelectorAll(".toggle-password").forEach(icon => {
+                icon.addEventListener("click", function () {
+                    const targetId = this.getAttribute("data-target");
+                    const input = document.getElementById(targetId);
+                    input.type = input.type === "password" ? "text" : "password";
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
+                });
+            });
+
+            // Handle Login Submission
+            document.querySelector(".sign-in-form").addEventListener("submit", function () {
+                showLoader();
+            });
+
+            // Handle Sign-Up Form Submission with OTP Verification
+            document.querySelector(".sign-in-button").addEventListener("click", async function (event) {
+                event.preventDefault(); // Prevent form submission until OTP is verified
+                showLoader();
+
+                const email = document.getElementById("signupEmail").value.trim();
+                const password = document.getElementById("signupPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                const res = await fetch("/isRegistered",{
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                })
+                const data = await res.json();  
+               
+                
+                if(data.isRegistered){
+                    hideLoader()
+                    return Swal.fire("Error", "User already registered!", "error");
+                    location.reload()
+                }
+
+                if (!email || !email.includes("@")) {
+                    hideLoader();
+                    return Swal.fire("Invalid Email", "Please enter a valid email address!", "error");
+                }
+
+                if (password !== confirmPassword) {
+                    hideLoader();
+                    return Swal.fire("Error", "Passwords do not match!", "error");
+                }
+
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                sessionStorage.setItem("otp", otp);
+
+                try {
+                    const response = await fetch("/send-otp", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, otp }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: "OTP Verification",
+                            text: `An OTP has been sent to ${email}. Enter it below.`,
+                            input: "text",
+                            inputPlaceholder: "Enter OTP",
+                            showCancelButton: true,
+                            confirmButtonText: "Verify OTP",
+                            preConfirm: (enteredOTP) => {
+                                if (enteredOTP !== otp) {
+                                    Swal.showValidationMessage("Invalid OTP! Try again.");
+                                }
+                                return enteredOTP;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire("Success!", "Your account has been created!", "success").then(() => {
+                                    hideLoader();
+                                    document.querySelector(".sign-up-form").submit();
+                                });
+                            } else {
+                                hideLoader();
+                            }
+                        });
+                    } else {
+                        hideLoader();
+                        Swal.fire("Error", "Failed to send OTP. Please try again later.", "error");
+                    }
+                } catch (error) {
+                    hideLoader();
+                    Swal.fire("Error", "Server error! Try again later.", "error");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
