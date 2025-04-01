@@ -24,6 +24,7 @@ class User {
         );
         return result.rows[0];
     }
+  
 }
 
 export default User;

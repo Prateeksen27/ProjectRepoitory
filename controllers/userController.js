@@ -59,6 +59,8 @@ export const getProfile =  async (req, res) => {
         countFollow: countFollow,
         countFollowings: countFollowings
     }
+   
+    
     res.render("Profile/index", { user: user, currentPage: "profile",joinedAt:joinedAt,owner:user.id==req.user.id,repo:repos,techLogos:techLogos,isFollow:isFollow,data:data });
 }
 

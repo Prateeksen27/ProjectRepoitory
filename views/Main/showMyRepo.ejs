@@ -5,7 +5,7 @@
       <%- include('../partials/sidebar') %>
         <div class="flex flex-col flex-1">
           <%- include('../partials/navbar') %>
-            <main class="h-full pb-16 overflow-y-auto" style="padding: 4rem;">
+            <main class="h-fit pb-16 overflow-y-auto" style="padding: 4rem;">
               <!-- Repository Container -->
               <div class="bg-gray-100 dark:bg-gray-800 py-8">
                 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +15,7 @@
                         <img class="object-cover" src="/uploads/<%= repo.project_image_path %>" alt="Product Image"
                           width="200px" height="200px">
                       </div>
-                     
+
                       <div class="flex -mx-2 mb-4">
                         <% if (owner) { %>
                           <div class="w-1/2 px-2">
@@ -52,9 +52,14 @@
                     <div class="md:flex-1 p-2">
                       <div class="flex justify-between items-center">
                         <h2 class="text-2xl flex font-bold text-gray-800 dark:text-white mb-2">
-                         <p id="ownerName"><a href="/profile/<%= repo.user_id %>" class="hover:underline" id="ownerName"><%= name %></a></p> /<%= repo.title %>
+                          <p id="ownerName"><a href="/profile/<%= repo.user_id %>" class="hover:underline"
+                              id="ownerName">
+                              <%= name %>
+                            </a></p> /<%= repo.title %>
                         </h2>
-                        <p>📅 Created: <span id="repoCreated"></span></p>
+                        <p class="dark:text-gray-300">📅 Created: <span id="repoCreated">
+                            <%= new Date(repo.created_at).toLocaleDateString() %>
+                          </span></p>
                       </div>
                       <div>
                         <% if (repo.live_project_url !='' ) { %>
@@ -66,12 +71,12 @@
                                 d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-128c0-17.7-14.3-32-32-32L352 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z" />
                             </svg></a>
                           <% } %>
-                            <div class="flex justify-start mb-2 items-center" style="gap: 12px;">
+                            <div class="flex justify-start mb-2 items-center dark:text-gray-300" style="gap: 12px;">
                               <i class="fas fa-download" style="color: black;"></i>
                               <%= repo.total_downloads %>
-                              Downloads
+                                Downloads
                             </div>
-                          
+
                             <div class="flex mb-4">
                               <div class="mr-4">
                                 <span class="font-bold text-gray-700 dark:text-gray-300">Domain:</span>
@@ -97,7 +102,51 @@
                     </div>
                   </div>
                 </div>
+                <% if (moreRepos.length > 0) { %>
+                 
+               
+                <div style="text-align: left;">
+                  <h2 class="text-2xl" style="padding: 2rem;">More on <%= repo.domain %>
+                  </h2>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <% moreRepos.forEach(repo=> { %>
+                      <div
+                        class="repo bg-white dark:bg-gray-800 relative flex flex-col justify-center rounded-lg shadow-md p-4 transition-transform transform hover:scale-105"
+                        style="width: 370px;margin-left:2rem ;margin-bottom: 2rem;" >
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                          <%= repo.title %>
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">📅 Created: <%= new
+                            Date(repo.created_at).toLocaleDateString() %>
+                        </p>
+                        <div class="flex flex-col flex-grow mt-4 px-2">
+                          <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <%= repo.domain || "No description provided" %>
+                          </p>
+
+                          <div class="flex gap-4 mt-4" style="gap: 15px;">
+                            <a href="/repo/<%= repo.id %>"
+                              class="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition">
+                              Show Repo
+                            </a>
+                            <button onclick="deleteRepo('<%= repo.id %>')"
+                              class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <% }); %>
+                  </div>
+                </div>
+                <% } else { %>
+                 <div class="text-center text-gray-600 mb-2 dark:text-gray-300 text-sm mt-2">
+                  No more repositories found on this domain.
+                </div>
+                <% } %>
+
             </main>
+
         </div>
     </div>
     <script>
@@ -245,7 +294,7 @@
           });
         }
       }
-      document.getElementById("downloadBtn").addEventListener("click",async  (event) => {
+      document.getElementById("downloadBtn").addEventListener("click", async (event) => {
         event.preventDefault();
         var a = document.getElementById("downloadLink");
         const res = await fetch("/inc_download/<%= repo.id %>", {
@@ -253,7 +302,7 @@
           headers: { "Content-Type": "application/json" }
         })
         const data = await res.json()
-        if(data.error){
+        if (data.error) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -262,17 +311,17 @@
             timer: 1500
           })
         }
-        if(data.success){
+        if (data.success) {
           a.click()
-        Swal.fire({
-          icon: 'success',
-          title: 'Downloaded Successfully',
-          showConfirmButton: false,
-          timer: 1500
-        }).then(()=>location.reload())
-        
+          Swal.fire({
+            icon: 'success',
+            title: 'Downloaded Successfully',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => location.reload())
+
         }
-      
+
       })
       function timeAgo(date) {
         const now = new Date();

@@ -1,10 +1,8 @@
 # Ignore user-uploaded content
-public/profiles/
-public/uploads/
+/public/profiles/
 
 # Ignore node_modules
 node_modules/
-
 # Ignore environment variables
 .env
 
@@ -16,5 +14,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Ignore OS/system files
-.DS_Store
+.DS_Store   
 Thumbs.db

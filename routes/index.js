@@ -7,7 +7,7 @@ import pool from "../config/db.js";
 import { registerUser, loginUser, logoutUser, isRegistered, getProfile, updateProfileUser } from "../controllers/userController.js";
 import { updateBanner, updateProfile, updateProfilePicture } from "../controllers/profileController.js";
 import { sendOtp } from "../controllers/otp.js";
-import { checkRepo, deleteRepo, findRepoById, uploadRepo } from "../controllers/repo.js";
+import { checkRepo, deleteRepo, findRepoByDomain, findRepoById, uploadRepo } from "../controllers/repo.js";
 import { techLogos } from "../models/techlogos.js";
 import { isAuthenticated } from "../config/passport.js";
 import { followUser, getFollowerList, getFollowingList, removeFollower, unfollowUser } from "../controllers/followController.js";
@@ -61,7 +61,6 @@ router.get("/myRepos", isAuthenticated, async (req, res) => {
     res.render("Main/myRepos", { user: req.user, currentPage: "myRepos", myRepo: [] });
 })
 router.get("/savedPosts", isAuthenticated, (req, res) => res.render("Main/savedPosts", { user: req.user, currentPage: "savedPosts" }));
-router.get("/blogs", isAuthenticated, (req, res) => res.render("Blogs/blogs", { user: req.user, currentPage: "blogs" }));
 router.get("/community", isAuthenticated, (req, res) => res.render("Community/community", { user: req.user, currentPage: "community" }));
 router.get("/create", isAuthenticated, (req, res) => res.render("CreateProject/index", { user: req.user, currentPage: "create" }));
 router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
@@ -69,7 +68,7 @@ router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
         const id = req.params.repoId;
         const repo = await findRepoById(id);
         const name =await  User.findUserNameById(repo.user_id);
-        
+        const moreRepos = await findRepoByDomain(repo.domain,id);
         // console.log("Repo", repo);
         if (!repo) {
             return res.status(404).send("Repository not found");
@@ -79,7 +78,8 @@ router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
             repo: repo,
             currentPage: "create",
             owner: repo.user_id == req.user.id,
-            name: name
+            name: name,
+            moreRepos: moreRepos
         });
     } catch (error) {
         console.error("Error fetching repo:", error);

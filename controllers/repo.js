@@ -80,3 +80,17 @@ export const countRepos = async (id) => {
         return null; // Fix: Return null to indicate failure
     }
 };
+
+export const findRepoByDomain = async (domain,id) => {
+    try {
+        const repo = await pool.query(
+            "SELECT * FROM projects WHERE domain = $1 and id != $2 ORDER BY RANDOM() LIMIT 3",
+            [domain,id]
+        );
+
+        return repo.rows; // Returns up to 3 random projects from the domain
+    } catch (error) {
+        console.error("Error fetching repositories by domain:", error);
+        return null; // Return null in case of an error
+    }
+};
