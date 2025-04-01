@@ -86,7 +86,13 @@ form.sign-in-form {
   transition: 0.5s;
   font-size: 1.1rem;
 }
-
+.toggle-password{
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
 .input-field input {
   background: none;
   outline: none;

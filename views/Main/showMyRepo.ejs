@@ -9,7 +9,7 @@
               <!-- Repository Container -->
               <div class="bg-gray-100 dark:bg-gray-800 py-8">
                 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div class="flex flex-col md:flex-row -mx-4">
+                  <div class="flex flex-col md:flex-row w-full -mx-4">
                     <div class="md:flex-1 px-4">
                       <div class="h-[460px] rounded-lg p-2 bg-gray-300 dark:bg-gray-700 mb-4">
                         <img class="object-cover" src="/uploads/<%= repo.project_image_path %>" alt="Product Image"
@@ -21,9 +21,9 @@
                           <div class="w-1/2 px-2">
                             <button
                               class="flex items-center bg-blue-600 hover:bg-blue-700 text-gray-100 px-4 py-2 rounded text-sm space-x-2 transition duration-100"
-                              id="editProfileBtn" style="gap: 5px;">
+                              id="editProfileBtn" style="gap: 5px;padding: 10px 30px ;">
                               <i class="fas fa-edit" style="color: #ffffff;"></i>
-                              <span class="text-white">Edit Project</span>
+                              <span class="text-white">Edit</span>
                             </button>
                           </div>
                           <div class="w-1/2 px-2">
@@ -49,7 +49,7 @@
 
                       </div>
                     </div>
-                    <div class="md:flex-1 p-2">
+                    <div class="md:flex-1 p-2 w-full relative">
                       <div class="flex justify-between items-center">
                         <h2 class="text-2xl flex font-bold text-gray-800 dark:text-white mb-2">
                           <p id="ownerName"><a href="/profile/<%= repo.user_id %>" class="hover:underline"
@@ -98,52 +98,63 @@
                                 <%= repo.description %>
                               </p>
                             </div>
+                            <div class="absolute bottom-0 right-0" style="top: 85%;">
+                              <% if (isSaved) { %>
+                                <i class="fa-solid fa-bookmark" style="font-size: large;"
+                                  onclick="unsaveProject('<%= repo.id %>')"></i>
+                                <% } else { %>
+                                  <i class="fa-regular fa-bookmark" style="font-size: large;"
+                                    onclick="saveProject('<%= repo.id %>')"></i>
+                                  <% } %>
+
+
+                            </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <% if (moreRepos.length > 0) { %>
-                 
-               
-                <div style="text-align: left;">
-                  <h2 class="text-2xl" style="padding: 2rem;">More on <%= repo.domain %>
-                  </h2>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <% moreRepos.forEach(repo=> { %>
-                      <div
-                        class="repo bg-white dark:bg-gray-800 relative flex flex-col justify-center rounded-lg shadow-md p-4 transition-transform transform hover:scale-105"
-                        style="width: 370px;margin-left:2rem ;margin-bottom: 2rem;" >
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                          <%= repo.title %>
-                        </h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">📅 Created: <%= new
-                            Date(repo.created_at).toLocaleDateString() %>
-                        </p>
-                        <div class="flex flex-col flex-grow mt-4 px-2">
-                          <p class="text-sm text-gray-600 dark:text-gray-400">
-                            <%= repo.domain || "No description provided" %>
+                <% if (moreRepos.length> 0) { %>
+                  <div style="text-align: left;">
+                    <h2 class="text-2xl" style="padding: 2rem;">More on <%= repo.domain %>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <% moreRepos.forEach(repo=> { %>
+                        <div
+                          class="repo bg-white dark:bg-gray-800 relative flex flex-col justify-center rounded-lg shadow-md p-4 transition-transform transform hover:scale-105"
+                          style="width: 370px;margin-left:2rem ;margin-bottom: 2rem;">
+                          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <%= repo.title %>
+                          </h3>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">📅 Created: <%= new
+                              Date(repo.created_at).toLocaleDateString() %>
                           </p>
+                          <div class="flex flex-col flex-grow mt-4 px-2">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                              <%= repo.domain || "No description provided" %>
+                            </p>
 
-                          <div class="flex gap-4 mt-4" style="gap: 15px;">
-                            <a href="/repo/<%= repo.id %>"
-                              class="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition">
-                              Show Repo
-                            </a>
-                            <button onclick="deleteRepo('<%= repo.id %>')"
-                              class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
-                              Delete
-                            </button>
+                            <div class="flex gap-4 mt-4" style="gap: 15px;">
+                              <a href="/repo/<%= repo.id %>"
+                                class="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition">
+                                Show Repo
+                              </a>
+                              <% if (owner) { %>
+                                <button onclick="deleteRepo('<%= repo.id %>')"
+                                  class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
+                                  Delete
+                                </button>
+                                <% } %>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <% }); %>
+                        <% }); %>
+                    </div>
                   </div>
-                </div>
-                <% } else { %>
-                 <div class="text-center text-gray-600 mb-2 dark:text-gray-300 text-sm mt-2">
-                  No more repositories found on this domain.
-                </div>
-                <% } %>
+                  <% } else { %>
+                    <div class="text-center text-gray-600 mb-2 dark:text-gray-300 text-sm mt-2">
+                      No more repositories found on this domain.
+                    </div>
+                    <% } %>
 
             </main>
 
@@ -344,6 +355,40 @@
           }
         }
         return "just now";
+      }
+      function saveProject(repoId) {
+        fetch(`/save-project/${repoId}`, { method: "POST" })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(() => location.reload())
+            } else {
+              Swal.fire("Error!", "Something went wrong.", "error");
+            }
+          })
+          .catch(() => Swal.fire("Error!", "Failed to save repository.", "error"));
+      }
+      function unsaveProject(repoId) {
+        fetch(`/unsave-project/${repoId}`, { method: "POST" })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Unsaved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(() => location.reload())
+            } else {
+              Swal.fire("Error!", "Something went wrong.", "error");
+            }
+          })
+          .catch(() => Swal.fire("Error!", "Failed to unsave repository.", "error"));
       }
     </script>
   </body>

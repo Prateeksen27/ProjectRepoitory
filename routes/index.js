@@ -7,7 +7,7 @@ import pool from "../config/db.js";
 import { registerUser, loginUser, logoutUser, isRegistered, getProfile, updateProfileUser } from "../controllers/userController.js";
 import { updateBanner, updateProfile, updateProfilePicture } from "../controllers/profileController.js";
 import { sendOtp } from "../controllers/otp.js";
-import { checkRepo, deleteRepo, findRepoByDomain, findRepoById, uploadRepo } from "../controllers/repo.js";
+import { checkRepo, deleteRepo, findRepoByDomain, findRepoById, getSavedPosts, isSaved, saveProject, unsaveProject, uploadRepo } from "../controllers/repo.js";
 import { techLogos } from "../models/techlogos.js";
 import { isAuthenticated } from "../config/passport.js";
 import { followUser, getFollowerList, getFollowingList, removeFollower, unfollowUser } from "../controllers/followController.js";
@@ -60,7 +60,18 @@ router.get("/myRepos", isAuthenticated, async (req, res) => {
     }
     res.render("Main/myRepos", { user: req.user, currentPage: "myRepos", myRepo: [] });
 })
-router.get("/savedPosts", isAuthenticated, (req, res) => res.render("Main/savedPosts", { user: req.user, currentPage: "savedPosts" }));
+router.get("/savedPosts", isAuthenticated, async (req, res) => {
+    try {
+        const id = req.user.id;
+        const savedPosts = await getSavedPosts(id);
+      
+        
+        res.render("Main/savedPosts", { user: req.user, currentPage: "savedPosts", savedPosts: savedPosts,techLogos: techLogos });
+    }catch (error) {
+        console.log("Error", error);
+    }
+    
+});
 router.get("/community", isAuthenticated, (req, res) => res.render("Community/community", { user: req.user, currentPage: "community" }));
 router.get("/create", isAuthenticated, (req, res) => res.render("CreateProject/index", { user: req.user, currentPage: "create" }));
 router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
@@ -68,7 +79,8 @@ router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
         const id = req.params.repoId;
         const repo = await findRepoById(id);
         const name =await  User.findUserNameById(repo.user_id);
-        const moreRepos = await findRepoByDomain(repo.domain,id);
+        const moreRepos = await findRepoByDomain(repo.domain,req.user.id,id);
+        const isSave = await isSaved(req.user.id, id);
         // console.log("Repo", repo);
         if (!repo) {
             return res.status(404).send("Repository not found");
@@ -79,7 +91,8 @@ router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
             currentPage: "create",
             owner: repo.user_id == req.user.id,
             name: name,
-            moreRepos: moreRepos
+            moreRepos: moreRepos,
+            isSaved: isSave
         });
     } catch (error) {
         console.error("Error fetching repo:", error);
@@ -104,6 +117,8 @@ router.post("/inc_download/:id", isAuthenticated, async (req, res) => {
 })
 // router.get("/user-repos", isAuthenticated,userRepo);
 router.delete("/delete-repo/:repoId", isAuthenticated, deleteRepo)
+router.post("/save-project/:id",isAuthenticated,saveProject)
+router.post("/unsave-project/:id",isAuthenticated,unsaveProject)
 router.post("/profile-setup", isAuthenticated, uploadProfile.single("profilePic"), updateProfile);
 //update banner and profile
 router.post("/update-profile-pic", isAuthenticated, uploadProfile.single("image"), updateProfilePicture);
