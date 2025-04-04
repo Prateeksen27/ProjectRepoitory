@@ -1,13 +1,13 @@
 import pool from "../config/db.js";
 export const updateProfile = async (req, res) => {
     try {
-        const { fullName, bio } = req.body;
+        const { fullName, bio,designation } = req.body;
         const profilePic = req.file.filename;
         const userId = req.user.id;
 
         await pool.query(
-            "UPDATE users SET full_name = $1, small_about = $2, profile_pic = $3, profile_completed = true WHERE id = $4",
-            [fullName, bio, profilePic, userId]
+            "UPDATE users SET full_name = $1, small_about = $2, profile_pic = $3, profile_completed = true,designation=$5 WHERE id = $4",
+            [fullName, bio, profilePic, userId,designation]
         );
 
         res.redirect("/home");

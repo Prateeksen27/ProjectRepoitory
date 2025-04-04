@@ -12,6 +12,8 @@ import { techLogos } from "../models/techlogos.js";
 import { isAuthenticated } from "../config/passport.js";
 import { followUser, getFollowerList, getFollowingList, removeFollower, unfollowUser } from "../controllers/followController.js";
 import User from "../models/user.js";
+import { genPrompt } from "../generate_prompt.js";
+import run from "../gemini.js";
 const router = express.Router();
 // ✅ Storage Configuration for profile pictures
 const profileStorage = multer.diskStorage({
@@ -173,6 +175,31 @@ router.post("/getUsersByIds", async (req, res) => {
     const users = await pool.query(`SELECT id, full_name, small_about, profile_pic FROM users WHERE id = ANY($1)`, [userIds]);
     res.json({ users: users.rows });
 });
+
+ 
+router.post('/generate', async (req, res) => {
+    const {name,languages,designation}=req.body
+    if(languages=='') return res.json({success:false})
+    const prompt =  genPrompt(name,languages,designation)
+    const resp = await run(prompt)  
+    
+    
+    res.json({bio:resp,success:true})
+    
+  })
+  router.post('/updateBio',async (req,res)=>{
+    try{
+    const {about} = req.body
+    console.log(about);
+    
+    await pool.query("update users set bio = $1 where id=$2",[about,req.user.id])
+    res.json({success:true})
+    }catch(err){
+        console.log(err);
+        res.json({success:false})
+        
+    }
+  })
 
 // ✅ Auth Routes
 router.post("/register", registerUser);
