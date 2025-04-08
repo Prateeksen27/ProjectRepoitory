@@ -74,7 +74,6 @@ router.get("/savedPosts", isAuthenticated, async (req, res) => {
     }
     
 });
-router.get("/community", isAuthenticated, (req, res) => res.render("Community/community", { user: req.user, currentPage: "community" }));
 router.get("/create", isAuthenticated, (req, res) => res.render("CreateProject/index", { user: req.user, currentPage: "create" }));
 router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
     try {

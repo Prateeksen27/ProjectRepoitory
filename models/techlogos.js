@@ -29,4 +29,5 @@ export    const techLogos = {
     "dotnet": "https://cdn.simpleicons.org/dotnet/512BD4",
     "default": "https://cdn.simpleicons.org/code/gray",
     "sql": "https://img.icons8.com/color/48/mysql-logo.png",
+    "kotlin":"https://img.icons8.com/color/48/kotlin.png"
   };
