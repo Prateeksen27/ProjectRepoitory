@@ -5,7 +5,7 @@ import fs from "fs-extra";
 import multer from "multer";
 import pool from "../config/db.js";
 import { registerUser, loginUser, logoutUser, isRegistered, getProfile, updateProfileUser } from "../controllers/userController.js";
-import { updateBanner, updateProfile, updateProfilePicture } from "../controllers/profileController.js";
+import { updateBanner, updatePassword, updateProfile, updateProfilePicture } from "../controllers/profileController.js";
 import { sendOtp } from "../controllers/otp.js";
 import { checkRepo, deleteRepo, findRepoByDomain, findRepoById, getSavedPosts, isSaved, saveProject, unsaveProject, uploadRepo } from "../controllers/repo.js";
 import { techLogos } from "../models/techlogos.js";
@@ -200,7 +200,8 @@ router.post('/generate', async (req, res) => {
         
     }
   })
-
+//change password
+router.post('/change-password',updatePassword)
 // ✅ Auth Routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);

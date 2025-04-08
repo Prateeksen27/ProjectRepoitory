@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import bcrypt from 'bcrypt'
 export const updateProfile = async (req, res) => {
     try {
         const { fullName, bio,designation } = req.body;
@@ -38,5 +39,19 @@ export const updateBanner =  async (req, res) => {
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: "Database Error" });
+    }
+}
+export const updatePassword = async (req,res)=>{
+    try {
+        const {email,password}=req.body;
+        console.log(req.body);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await pool.query("update users set password = $1 where email = $2",[hashedPassword,email]);
+        res.json({success:true})
+        
+    } catch (error) {
+        console.log(error);
+        res.json({success:false})
+        
     }
 }
