@@ -33,20 +33,30 @@
                             </button>
                           </div>
                           <% } else { %>
-                            <div class="w-1/2 px-2">
-                              <button
-                                class="flex items-center new-repo-btn text-gray-100 px-4 py-2 rounded text-sm space-x-2 transition duration-100"
-                                style="gap: 5px;" id="downloadBtn">
-                                <i class="fas fa-download" style="color: #ffffff;"></i>
-                                <span class="text-white">Download Repo</span>
+                            <% if (downloadAllow) { %>
 
-                              </button>
-                              <a href="/uploads/<%= repo.zip_file_path %>" class="hidden" id="downloadLink"
-                                download></a>
-                            </div>
-                            <% } %>
+                              <div class="w-1/2 px-2">
+                                <button
+                                  class="flex items-center new-repo-btn text-gray-100 px-4 py-2 rounded text-sm space-x-2 transition duration-100"
+                                  style="gap: 5px;" id="downloadBtn">
+                                  <i class="fas fa-download" style="color: #ffffff;"></i>
+                                  <span class="text-white">Download Repo</span>
 
+                                </button>
+                                <a href="/uploads/<%= repo.zip_file_path %>" class="hidden" id="downloadLink"
+                                  download></a>
+                              </div>
+                              <% } else { %>
 
+                                <div class="w-1/2 px-2">
+                                  <button
+                                    class="flex items-center new-repo-btn text-gray-100 px-4 py-2 rounded text-sm space-x-2 transition duration-100"
+                                    style="gap: 5px;background: blue;" id="requestBtn">
+                                    <span class="text-white">Request Repo</span>
+                                  </button>
+                                </div>
+                                <% } %>
+                                  <% } %>
                       </div>
                     </div>
                     <div class="md:flex-1 p-2 w-full relative">
@@ -305,35 +315,37 @@
           });
         }
       }
-      document.getElementById("downloadBtn").addEventListener("click", async (event) => {
-        event.preventDefault();
-        var a = document.getElementById("downloadLink");
-        const res = await fetch("/inc_download/<%= repo.id %>", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" }
-        })
-        const data = await res.json()
-        if (data.error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.error,
-            showConfirmButton: false,
-            timer: 1500
+      if ("<%= downloadAllow %>" == "true") {
+        document.getElementById("downloadBtn").addEventListener("click", async (event) => {
+          event.preventDefault();
+          var a = document.getElementById("downloadLink");
+          const res = await fetch("/inc_download/<%= repo.id %>", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
           })
-        }
-        if (data.success) {
-          a.click()
-          Swal.fire({
-            icon: 'success',
-            title: 'Downloaded Successfully',
-            showConfirmButton: false,
-            timer: 1500
-          }).then(() => location.reload())
+          const data = await res.json()
+          if (data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.error,
+              showConfirmButton: false,
+              timer: 1500
+            })
+          }
+          if (data.success) {
+            a.click()
+            Swal.fire({
+              icon: 'success',
+              title: 'Downloaded Successfully',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => location.reload())
 
-        }
+          }
 
-      })
+        })
+      }
       function timeAgo(date) {
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
@@ -390,6 +402,63 @@
           })
           .catch(() => Swal.fire("Error!", "Failed to unsave repository.", "error"));
       }
+      document.getElementById("requestBtn").addEventListener("click", async () => {
+        // Show SweetAlert input
+        const { value: reason } = await Swal.fire({
+          title: 'Why do you want to download this repository?',
+          input: 'textarea',
+          inputPlaceholder: 'Type your reason here...',
+          showCancelButton: true,
+          confirmButtonText: 'Submit Request',
+          preConfirm: (reason) => {
+            if (!reason) {
+              Swal.showValidationMessage('Please provide a reason!');
+            }
+            return reason;
+          }
+        });
+
+        // If user submitted a reason
+        if (reason) {
+          try {
+            const response = await fetch('/request-download', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                repoId: '<%= repo.id %>', // replace with actual repo ID
+                reason: reason,
+                owner: '<%= repo.user_id %>'
+              })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Request Sent!',
+                text: 'The repository owner will review your request.',
+                timer: 2000,
+                showConfirmButton: false
+              });
+
+              // Optional: update button UI
+              const btn = document.getElementById("requestBtn");
+              btn.textContent = "Request Pending";
+              btn.disabled = true;
+
+            } else {
+              Swal.fire('Error', data.message || 'Failed to send request.', 'error');
+            }
+
+          } catch (err) {
+            Swal.fire('Error', 'Something went wrong! Try again later.', 'error');
+          }
+        }
+      });
+
     </script>
   </body>
 

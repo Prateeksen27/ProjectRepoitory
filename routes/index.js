@@ -66,23 +66,34 @@ router.get("/savedPosts", isAuthenticated, async (req, res) => {
     try {
         const id = req.user.id;
         const savedPosts = await getSavedPosts(id);
-      
-        
-        res.render("Main/savedPosts", { user: req.user, currentPage: "savedPosts", savedPosts: savedPosts,techLogos: techLogos });
-    }catch (error) {
+
+
+        res.render("Main/savedPosts", { user: req.user, currentPage: "savedPosts", savedPosts: savedPosts, techLogos: techLogos });
+    } catch (error) {
         console.log("Error", error);
     }
-    
+
 });
 router.get("/create", isAuthenticated, (req, res) => res.render("CreateProject/index", { user: req.user, currentPage: "create" }));
 router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
     try {
         const id = req.params.repoId;
         const repo = await findRepoById(id);
-        const name =await  User.findUserNameById(repo.user_id);
-        const moreRepos = await findRepoByDomain(repo.domain,req.user.id,id);
+        const name = await User.findUserNameById(repo.user_id);
+        const moreRepos = await findRepoByDomain(repo.domain, req.user.id, id);
         const isSave = await isSaved(req.user.id, id);
+        var downloadAllow = false
+        var text = "Request Repo";
         // console.log("Repo", repo);
+        const Check = await pool.query(
+            `SELECT * FROM download_requests 
+       WHERE user_id = $1 AND repo_id = $2 AND status = 'accept'`,
+            [req.user.id, id]
+        );
+
+        if (Check.rows.length > 0) {
+            downloadAllow = true
+        }
         if (!repo) {
             return res.status(404).send("Repository not found");
         }
@@ -93,7 +104,8 @@ router.get("/repo/:repoId", isAuthenticated, async (req, res) => {
             owner: repo.user_id == req.user.id,
             name: name,
             moreRepos: moreRepos,
-            isSaved: isSave
+            isSaved: isSave,
+            downloadAllow: downloadAllow
         });
     } catch (error) {
         console.error("Error fetching repo:", error);
@@ -118,8 +130,8 @@ router.post("/inc_download/:id", isAuthenticated, async (req, res) => {
 })
 // router.get("/user-repos", isAuthenticated,userRepo);
 router.delete("/delete-repo/:repoId", isAuthenticated, deleteRepo)
-router.post("/save-project/:id",isAuthenticated,saveProject)
-router.post("/unsave-project/:id",isAuthenticated,unsaveProject)
+router.post("/save-project/:id", isAuthenticated, saveProject)
+router.post("/unsave-project/:id", isAuthenticated, unsaveProject)
 router.post("/profile-setup", isAuthenticated, uploadProfile.single("profilePic"), updateProfile);
 //update banner and profile
 router.post("/update-profile-pic", isAuthenticated, uploadProfile.single("image"), updateProfilePicture);
@@ -143,25 +155,25 @@ router.post("/upload", isAuthenticated, uploadProject.fields([
 ]), uploadRepo);
 //follow routes
 router.post("/follow/:userId", isAuthenticated, followUser);
-router.post("/unfollow/:userId",isAuthenticated,unfollowUser)
-router.post("/removefollower/:userId",isAuthenticated,removeFollower)
-router.get("/getFollowers/:userId", isAuthenticated, async (req,res)=>{
+router.post("/unfollow/:userId", isAuthenticated, unfollowUser)
+router.post("/removefollower/:userId", isAuthenticated, removeFollower)
+router.get("/getFollowers/:userId", isAuthenticated, async (req, res) => {
     try {
         const id = req.params.userId;
         const followers = await getFollowerList(id);
-        res.json({followers:followers});
+        res.json({ followers: followers });
     } catch (error) {
         console.log("Error", error);
         res.json({ success: false });
     }
 });
-router.get("/getFollowing/:userId", isAuthenticated, async (req,res)=>{
+router.get("/getFollowing/:userId", isAuthenticated, async (req, res) => {
     try {
         const id = req.params.userId;
         const following = await getFollowingList(id);
         // console.log("Following",following);
-        
-        res.json({following:following});
+
+        res.json({ following: following });
     } catch (error) {
         console.log("Error", error);
         res.json({ success: false });
@@ -175,32 +187,113 @@ router.post("/getUsersByIds", async (req, res) => {
     res.json({ users: users.rows });
 });
 
- 
+
 router.post('/generate', async (req, res) => {
-    const {name,languages,designation}=req.body
-    if(languages=='') return res.json({success:false})
-    const prompt =  genPrompt(name,languages,designation)
-    const resp = await run(prompt)  
-    
-    
-    res.json({bio:resp,success:true})
-    
-  })
-  router.post('/updateBio',async (req,res)=>{
-    try{
-    const {about} = req.body
-    console.log(about);
-    
-    await pool.query("update users set bio = $1 where id=$2",[about,req.user.id])
-    res.json({success:true})
-    }catch(err){
+    const { name, languages, designation } = req.body
+    if (languages == '') return res.json({ success: false })
+    const prompt = genPrompt(name, languages, designation)
+    const resp = await run(prompt)
+
+
+    res.json({ bio: resp, success: true })
+
+})
+router.post('/updateBio', async (req, res) => {
+    try {
+        const { about } = req.body
+        console.log(about);
+
+        await pool.query("update users set bio = $1 where id=$2", [about, req.user.id])
+        res.json({ success: true })
+    } catch (err) {
         console.log(err);
-        res.json({success:false})
-        
+        res.json({ success: false })
+
     }
-  })
-//change password
-router.post('/change-password',updatePassword)
+})
+//request pages
+router.get('/showRequest', isAuthenticated, async (req, res) => {
+    try {
+        const id = req.user.id;
+        const requ = await pool.query("SELECT * FROM download_requests WHERE owner_id = $1 and status='pending'", [id]);
+        res.render("Main/showRequests", { user: req.user, requests: requ.rows, currentPage: "showRequest" });
+    } catch (error) {
+        console.log(error);
+
+    }
+})
+router.post('/request-download', async (req, res) => {
+    const { repoId, owner } = req.body; // repoId & ownerId from frontend
+    const userId = req.user.id; // authenticated user ID
+    const reason = req.body.reason;
+
+    if (!repoId || !reason || !owner) {
+        return res.status(400).json({ success: false, message: 'Missing required fields.' });
+    }
+
+    try {
+        // Check for duplicate request
+        const duplicateCheck = await pool.query(
+            `SELECT * FROM download_requests 
+       WHERE user_id = $1 AND repo_id = $2 AND status = 'pending'`,
+            [userId, repoId]
+        );
+
+        if (duplicateCheck.rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'You already have a pending request for this repo.' });
+        }
+
+        // Insert new request
+        const result = await pool.query(
+            `INSERT INTO download_requests (owner_id, user_id, repo_id, reason, status)
+       VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
+            [owner, userId, repoId, reason]
+        );
+
+        // Optionally, send email to owner here
+
+        return res.status(200).json({ success: true, message: 'Request submitted successfully!', request: result.rows[0] });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+// update-request route
+router.post("/update-request/:id", isAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.params; // request id
+        const { status } = req.body; // approved / rejected
+        const ownerId = req.user.id; // logged in repo owner
+
+        if (!["accept", "reject"].includes(status)) {
+            return res.status(400).json({ success: false, message: "Invalid status" });
+        }
+
+        // Check if the request belongs to this owner
+        const request = await pool.query(
+            "SELECT * FROM download_requests WHERE id = $1 AND owner_id = $2",
+            [id, ownerId]
+        );
+
+        if (request.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Request not found or not authorized" });
+        }
+
+        // Update status
+        await pool.query(
+            "UPDATE download_requests SET status = $1 WHERE id = $2",
+            [status, id]
+        );
+
+        return res.json({ success: true, message: `Request ${status}` });
+    } catch (error) {
+        console.error("Error updating request:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+router.post('/change-password', updatePassword)
 // ✅ Auth Routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);

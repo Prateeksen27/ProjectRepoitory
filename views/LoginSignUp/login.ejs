@@ -7,7 +7,9 @@
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles/login.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-yH8QtzOeFf/1iEjKblVvP6n6z/Sflj2FC6XBnPksjvGzE1B6AV+c8rc1uZxPbS1GkkPvAvD7ZbV9k3yja1ML1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Blur effect when loading */
         .blur-background {
@@ -352,7 +354,7 @@
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ email, password }),
                                 });
-                               const data = await res.json()
+                                const data = await res.json()
 
                                 if (data.success) {
                                     Swal.fire({

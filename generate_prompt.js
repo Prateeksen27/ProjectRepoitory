@@ -6,7 +6,7 @@ export const genPrompt = (name,lang,desg) => {
     emphasizing passion for technology, innovation, and community growth.
     
     just give me the about in plain text dont give me options you decide the tone and the content and use emojies yr 
-    eveery time generate diff ans 
+    every time generate diff ans 
     `
     return prompt
 }

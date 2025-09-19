@@ -1,0 +1,162 @@
+<%- include('../partials/header') %>
+
+    <body class="bg-gray-50 dark:bg-gray-900">
+        <div class="flex h-screen">
+            <%- include('../partials/sidebar') %>
+                <div class="flex flex-col flex-1">
+                    <%- include('../partials/navbar') %>
+                        <main class="h-full pb-16 overflow-y-auto">
+                            <div class="p-6">
+                                <div id="requestContainer" class="flex flex-col gap-6" style="margin-left: 50px;">
+
+                                    <% if (requests.length===0) { %>
+                                        <p class="text-gray-600 dark:text-gray-300 text-lg">No pending requests 🚫</p>
+                                        <% } else { %>
+                                            <% requests.forEach(request=> { %>
+                                                <div
+                                                    class="overflow-x-auto bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                                                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                                        Download Requests 📂</h2>
+
+                                                    <table
+                                                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                        <thead class="bg-gray-100 dark:bg-gray-700">
+                                                            <tr>
+                                                                <th
+                                                                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Requester</th>
+                                                                <th
+                                                                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Repository</th>
+                                                                <th
+                                                                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Reason</th>
+                                                                <th
+                                                                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Date</th>
+                                                                <th
+                                                                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Status</th>
+                                                                <th
+                                                                    class="px-6 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                                                                    Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                            <% requests.forEach(request=> { %>
+                                                                <tr
+                                                                    class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                                                    <!-- Requester -->
+                                                                    <td
+                                                                        class="px-6 py-4 text-sm font-medium text-blue-600">
+                                                                        <a href="/profile/<%= request.user_id %>"
+                                                                            class="hover:underline">
+                                                                            Show Profile
+                                                                        </a>
+                                                                    </td>
+
+                                                                    <!-- Repo -->
+                                                                    <td
+                                                                        class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-200">
+                                                                        <a href="/repo/<%= request.repo_id %>"
+                                                                            class="hover:underline">
+                                                                            Show Requested Repo
+                                                                        </a>
+                                                                    </td>
+
+                                                                    <!-- Reason -->
+                                                                    <td
+                                                                        class="px-6  text-center py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">
+                                                                        <%= request.reason %>
+                                                                    </td>
+
+                                                                    <!-- Date -->
+                                                                    <td
+                                                                        class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                                        <%= new
+                                                                            Date(request.created_at).toLocaleString() %>
+                                                                    </td>
+
+                                                                    <!-- Status -->
+                                                                    <td class=" text-center py-4">
+                                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold 
+            <% if (request.status === 'pending') { %> bg-yellow-100 text-yellow-800 <% } %>
+            <% if (request.status === 'approved') { %> bg-green-100 text-green-800 <% } %>
+            <% if (request.status === 'rejected') { %> bg-red-100 text-red-800 <% } %>">
+                                                                            <%= request.status %>
+                                                                        </span>
+                                                                    </td>
+
+                                                                    <!-- Actions -->
+                                                                    <td class="px-6 py-4 flex gap-2 justify-center">
+                                                                        <% if (request.status==='pending' ) { %>
+                                                                            <button
+                                                                              onclick="updateRequest('<%= request.id %>', 'accept')"
+                                                                                class="flex items-center new-repo-btn text-gray-100 mx-1 px-4 py-2 rounded text-sm space-x-2 transition duration-100"
+                                                                                style="gap: 5px;" id="downloadBtn">
+                                                                                <i class="fa-solid fa-check"></i>
+                                                                                <span class="text-white">Accept</span>
+
+                                                                            </button>
+                                                                          
+                                                                            <button
+                                                                                onclick="updateRequest('<%= request.id %>', 'reject')"
+                                                                                class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
+                                                                                <i class="fa-solid fa-xmark"></i> Reject
+                                                                            </button>
+                                                                            <% } else { %>
+                                                                                <span
+                                                                                    class="text-gray-400 text-xs italic">No
+                                                                                    actions</span>
+                                                                                <% } %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+
+                                                <% }) %>
+                                                    <% } %>
+
+                                </div>
+                            </div>
+                        </main>
+                </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            async function updateRequest(requestId, action) {
+                const confirm = await Swal.fire({
+                    title: `Are you sure to ${action} this request?`,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: `Yes, ${action}`,
+                    cancelButtonText: "Cancel"
+                });
+
+                if (confirm.isConfirmed) {
+                    try {
+                        const res = await fetch(`/update-request/${requestId}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ status: action })
+                        });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            Swal.fire("Done!", `Request ${action}.`, "success").then(() => location.reload());
+                        } else {
+                            Swal.fire("Error", data.message || "Something went wrong", "error");
+                        }
+                    } catch (e) {
+                        Swal.fire("Error", "Server error, try again later", "error");
+                    }
+                }
+            }
+        </script>
+    </body>
+
+    </html>

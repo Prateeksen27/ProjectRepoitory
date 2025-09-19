@@ -14,7 +14,6 @@ CREATE TABLE users (
     designation text default 'Not Specified',
     banner text default 'https://vojislavd.com/ta-template-demo/assets/img/profile-background.jpg',
     joined_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
-
 );
 CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
